@@ -120,7 +120,9 @@ describe("Agent Copilot workflow", () => {
       name: /Control panel/i,
     });
     const panel = within(controlPanel);
-    expect(screen.getByRole("button", { name: /Mark Ready for Agent Send/i })).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: /Mark Ready for Agent Send/i }),
+    ).toHaveLength(2);
     expect(panel.getByRole("button", { name: /Mark Ready for Agent Send/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Send$/i })).not.toBeInTheDocument();
   });
