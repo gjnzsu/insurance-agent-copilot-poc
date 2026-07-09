@@ -88,9 +88,6 @@ export function Workspace({
             </strong>
           </p>
           <pre className="message-draft">{draft.body}</pre>
-          <button className="primary-action" onClick={onMarkReady} type="button">
-            Mark Ready for Agent Send
-          </button>
         </div>
       ) : null}
     </section>
