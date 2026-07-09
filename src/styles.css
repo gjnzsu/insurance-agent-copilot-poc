@@ -174,6 +174,11 @@ li {
   padding: 14px;
 }
 
+.helper-text,
+.editor-label {
+  color: #52606d;
+}
+
 .detail-block ul,
 .control-panel ul {
   margin: 0 0 18px;
@@ -229,6 +234,21 @@ li {
   align-content: start;
   display: grid;
   gap: 8px;
+}
+
+.edit-stack,
+.inline-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.editor-input {
+  border: 1px solid #b8c2cc;
+  border-radius: 6px;
+  min-height: 96px;
+  padding: 10px;
+  resize: vertical;
+  width: 100%;
 }
 
 .decision-line {

@@ -24,6 +24,9 @@ export default function App() {
   const [decisions, setDecisions] =
     useState<Record<string, TalkingPointDecision>>(initialDecisions);
   const [draft, setDraft] = useState<FollowUpDraft | null>(null);
+  const approvedCount = brief
+    ? brief.talkingPoints.filter((point) => decisions[point.id] === "approved").length
+    : 0;
 
   const compliance = useMemo(
     () => (brief ? getComplianceState(brief, draft ?? undefined) : undefined),
@@ -40,11 +43,45 @@ export default function App() {
   }
 
   function setDecision(id: string, decision: TalkingPointDecision) {
+    if (decisions[id] === decision) {
+      return;
+    }
+
     setDecisions((current) => ({ ...current, [id]: decision }));
+
+    if (draft) {
+      setDraft(null);
+      setStep("approval");
+    }
+  }
+
+  function setTalkingPointLanguage(id: string, clientLanguage: string) {
+    const nextLanguage = clientLanguage.trim();
+
+    if (!brief || nextLanguage.length === 0) {
+      return;
+    }
+
+    const currentPoint = brief.talkingPoints.find((point) => point.id === id);
+    if (!currentPoint || currentPoint.clientLanguage === nextLanguage) {
+      return;
+    }
+
+    setBrief({
+      ...brief,
+      talkingPoints: brief.talkingPoints.map((point) =>
+        point.id === id ? { ...point, clientLanguage: nextLanguage } : point,
+      ),
+    });
+
+    if (draft) {
+      setDraft(null);
+      setStep("approval");
+    }
   }
 
   function handleGenerateDraft() {
-    if (!brief) return;
+    if (!brief || approvedCount === 0) return;
     setDraft(generateFollowUpDraft(brief, decisions));
     setStep("followup");
   }
@@ -86,6 +123,7 @@ export default function App() {
       <section className="workspace-grid">
         <DemoRail canNavigateTo={canNavigateTo} onChangeStep={navigateTo} step={step} />
         <Workspace
+          approvedCount={approvedCount}
           brief={brief}
           decisions={decisions}
           draft={draft}
@@ -100,6 +138,7 @@ export default function App() {
           decisions={decisions}
           draft={draft}
           onDecision={setDecision}
+          onEditClientLanguage={setTalkingPointLanguage}
           onMarkReady={markReady}
         />
       </section>

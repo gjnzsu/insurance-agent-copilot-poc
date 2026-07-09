@@ -12,6 +12,7 @@ interface ControlPanelProps {
   decisions: Record<string, TalkingPointDecision>;
   draft: FollowUpDraft | null;
   onDecision: (id: string, decision: TalkingPointDecision) => void;
+  onEditClientLanguage: (id: string, clientLanguage: string) => void;
   onMarkReady: () => void;
 }
 
@@ -43,10 +44,11 @@ export function ControlPanel({
   decisions,
   draft,
   onDecision,
+  onEditClientLanguage,
   onMarkReady,
 }: ControlPanelProps) {
   const evidenceRows = brief
-    ? brief.sources.slice(0, 6).map((item) => ({
+    ? brief.sources.map((item) => ({
         id: item.id,
         label: item.title,
         kindLabel: item.kind,
@@ -88,6 +90,9 @@ export function ControlPanel({
       </ul>
 
       <h3>Talking point controls</h3>
+      {draft ? (
+        <p className="helper-text">Changing approvals or client language clears the current draft.</p>
+      ) : null}
       <div className="stack">
         {talkingPoints.map((point) => (
           <ApprovalCard
@@ -95,6 +100,7 @@ export function ControlPanel({
             decision={brief ? decisions[point.id] : "pending"}
             disabled={!brief}
             key={point.id}
+            onEdit={brief ? onEditClientLanguage : undefined}
             onDecision={onDecision}
             point={point}
           />

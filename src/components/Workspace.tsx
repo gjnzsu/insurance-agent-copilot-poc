@@ -8,6 +8,7 @@ import { ApprovalCard } from "./ApprovalCard";
 
 interface WorkspaceProps {
   step: WorkflowStep;
+  approvedCount: number;
   brief: MeetingBrief | null;
   decisions: Record<string, TalkingPointDecision>;
   draft: FollowUpDraft | null;
@@ -18,6 +19,7 @@ interface WorkspaceProps {
 
 export function Workspace({
   step,
+  approvedCount,
   brief,
   decisions,
   draft,
@@ -47,16 +49,41 @@ export function Workspace({
           <p className="eyebrow">Step 2</p>
           <h2>Review AI-suggested talking points</h2>
           <p>{brief.snapshot}</p>
+          <h3>Meeting brief</h3>
           <div className="detail-grid">
             <article className="detail-block">
-              <h3>Family context</h3>
-              <p>{brief.policySummary.join(" ")}</p>
+              <h3>Policy summary</h3>
+              <ul>
+                {brief.policySummary.map((summary) => (
+                  <li key={summary}>{summary}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="detail-block">
+              <h3>Coverage gaps</h3>
+              <ul>
+                {brief.coverageGaps.map((gap) => (
+                  <li key={gap}>{gap}</li>
+                ))}
+              </ul>
             </article>
             <article className="detail-block">
               <h3>Discovery questions</h3>
               <ul>
                 {brief.discoveryQuestions.map((question) => (
                   <li key={question}>{question}</li>
+                ))}
+              </ul>
+            </article>
+            <article className="detail-block">
+              <h3>Next-best action</h3>
+              <p>{brief.nextBestAction}</p>
+            </article>
+            <article className="detail-block">
+              <h3>Compliance reminders</h3>
+              <ul>
+                {brief.complianceReminders.map((reminder) => (
+                  <li key={reminder}>{reminder}</li>
                 ))}
               </ul>
             </article>
@@ -68,9 +95,19 @@ export function Workspace({
               point={point}
             />
           ))}
-          <button className="primary-action" onClick={onGenerateDraft} type="button">
+          <button
+            className="primary-action"
+            disabled={approvedCount === 0}
+            onClick={onGenerateDraft}
+            type="button"
+          >
             Generate Follow-up Draft
           </button>
+          {approvedCount === 0 ? (
+            <p className="helper-text">
+              Approve at least one talking point to generate follow-up.
+            </p>
+          ) : null}
         </div>
       ) : null}
 
