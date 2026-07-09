@@ -26,6 +26,8 @@ export default function App() {
     () => (brief ? getComplianceState(brief, draft ?? undefined) : undefined),
     [brief, draft],
   );
+  const canAccessApproval = Boolean(brief);
+  const canAccessFollowup = Boolean(draft);
 
   function handleGenerateBrief() {
     setBrief(generateMeetingBrief(demoData));
@@ -49,16 +51,40 @@ export default function App() {
     setDraft({ ...draft, status: "ready_for_agent_send" });
   }
 
+  function canNavigateTo(target: WorkflowStep) {
+    if (target === "approval") return canAccessApproval;
+    if (target === "followup") return canAccessFollowup;
+    return true;
+  }
+
+  function navigateTo(target: WorkflowStep) {
+    if (canNavigateTo(target)) {
+      setStep(target);
+    }
+  }
+
   const stepLabel = {
     brief: "Meeting Brief",
-    approval: "Agent Approval",
+    approval: "Review AI-suggested talking points",
     followup: "Follow-up Draft",
   }[step];
 
-  const workflowSteps: Array<{ id: WorkflowStep; label: string; Icon: ComponentType<{ size: number }> }> = [
+  const workflowSteps: Array<{
+    id: WorkflowStep;
+    label: string;
+    Icon: ComponentType<{ size: number }>;
+  }> = [
     { id: "brief", label: "Meeting Brief", Icon: FileText },
-    { id: "approval", label: "Agent Approval", Icon: CheckCircle2 },
-    { id: "followup", label: "Follow-up Draft", Icon: ShieldCheck },
+    {
+      id: "approval",
+      label: "Agent Approval",
+      Icon: CheckCircle2,
+    },
+    {
+      id: "followup",
+      label: "Follow-up Draft",
+      Icon: ShieldCheck,
+    },
   ];
 
   return (
@@ -84,7 +110,8 @@ export default function App() {
             <button
               className={`rail-step ${step === id ? "active" : ""}`}
               key={String(id)}
-              onClick={() => setStep(id)}
+              disabled={!canNavigateTo(id)}
+              onClick={() => navigateTo(id)}
               type="button"
             >
               <Icon size={18} />
@@ -138,20 +165,6 @@ export default function App() {
                       {decisions[point.id]}
                     </span>
                   </div>
-                  <div className="approval-actions">
-                    <button
-                      onClick={() => setDecision(point.id, "approved")}
-                      type="button"
-                    >
-                      Approve {point.title}
-                    </button>
-                    <button
-                      onClick={() => setDecision(point.id, "rejected")}
-                      type="button"
-                    >
-                      Reject {point.title}
-                    </button>
-                  </div>
                 </article>
               ))}
               <button className="primary-action" onClick={handleGenerateDraft} type="button">
@@ -173,9 +186,6 @@ export default function App() {
                 </strong>
               </p>
               <pre className="message-draft">{draft.body}</pre>
-              <button className="primary-action" onClick={markReady} type="button">
-                Mark Ready for Agent Send
-              </button>
             </div>
           )}
         </section>
@@ -208,6 +218,37 @@ export default function App() {
               </li>
             ))}
           </ul>
+
+          {brief && (
+            <>
+              <h3>Talking point controls</h3>
+              {brief.talkingPoints.map((point) => (
+                <article className="approval-card" key={point.id}>
+                  <p>{point.title}</p>
+                  <div className="approval-actions">
+                    <button
+                      onClick={() => setDecision(point.id, "approved")}
+                      type="button"
+                    >
+                      Approve {point.title}
+                    </button>
+                    <button
+                      onClick={() => setDecision(point.id, "rejected")}
+                      type="button"
+                    >
+                      Reject {point.title}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </>
+          )}
+
+          {draft && (
+            <button className="primary-action" onClick={markReady} type="button">
+              Mark Ready for Agent Send
+            </button>
+          )}
         </aside>
       </section>
     </main>
