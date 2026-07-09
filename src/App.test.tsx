@@ -18,6 +18,46 @@ describe("Agent Copilot workflow", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows human controls and evidence placeholders before brief generation", () => {
+    render(<App />);
+
+    const controlPanel = screen.getByRole("complementary", {
+      name: /Control panel/i,
+    });
+    const panel = within(controlPanel);
+
+    expect(panel.getByText(/Waiting for brief/i)).toBeInTheDocument();
+    expect(panel.getByRole("heading", { name: /Compliance/i })).toBeInTheDocument();
+    expect(
+      panel.getByText(/Generate a brief to load compliance checks\./i),
+    ).toBeInTheDocument();
+
+    expect(panel.getByRole("heading", { name: /Evidence/i })).toBeInTheDocument();
+    expect(panel.getByText(/Policy record\(s\)/i)).toBeInTheDocument();
+    expect(panel.getByText(/Product knowledge snippet\(s\)/i)).toBeInTheDocument();
+    expect(panel.getByText(/Compliance guideline\(s\)/i)).toBeInTheDocument();
+    expect(panel.getByText(/CRM interaction history/i)).toBeInTheDocument();
+
+    expect(
+      panel.getByRole("button", { name: /Approve Critical illness protection gap/i }),
+    ).toBeDisabled();
+    expect(
+      panel.getByRole("button", { name: /Reject Critical illness protection gap/i }),
+    ).toBeDisabled();
+    expect(
+      panel.getByRole("button", { name: /Approve Education planning conversation/i }),
+    ).toBeDisabled();
+    expect(
+      panel.getByRole("button", { name: /Reject Education planning conversation/i }),
+    ).toBeDisabled();
+    expect(
+      panel.getByRole("button", { name: /Approve Family protection review/i }),
+    ).toBeDisabled();
+    expect(
+      panel.getByRole("button", { name: /Reject Family protection review/i }),
+    ).toBeDisabled();
+  });
+
   it("shows point-level human controls in the right control panel after brief generation", async () => {
     const user = userEvent.setup();
     render(<App />);
