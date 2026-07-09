@@ -24,7 +24,7 @@ The demo client is **Sunny Tan - Family Protection Review**.
 
 Sunny Tan is married and has one young child. The review is triggered by an annual policy review after a family life event. Sunny has basic life insurance and medical coverage, but limited critical illness protection and no visible education-planning coverage.
 
-The agent's goal is to prepare for a review meeting, identify possible protection gaps, approve suitable talking points, and send a compliant follow-up after the discussion.
+The agent's goal is to prepare for a review meeting, identify possible protection gaps, approve suitable talking points, and mark a compliant follow-up as ready for agent send after the discussion.
 
 ## Target User
 
@@ -162,6 +162,17 @@ The demo should support a simple before-and-after story:
 
 - Before: agent spends time collecting scattered customer, policy, and product information.
 - After: agent receives a structured AI brief and uses human-controlled recommendations to prepare faster.
+
+## Demo Acceptance Checks
+
+The implemented prototype should make these checks easy to verify:
+
+- The demo starts directly in Sunny Tan's review case without requiring setup.
+- The meeting brief includes at least one cited product or compliance source.
+- At least two AI-suggested talking points require explicit agent approval.
+- A rejected talking point is not included in the follow-up draft.
+- The final follow-up action is `Mark Ready for Agent Send`, not `Send`.
+- The right control panel always shows human approval status and compliance state.
 
 ## Future Expansion
 
