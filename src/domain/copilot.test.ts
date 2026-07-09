@@ -82,6 +82,18 @@ describe("copilot domain logic", () => {
     expect(draft.status).toBe("needs_final_agent_approval");
   });
 
+  it("does not generate a follow-up draft when no talking points are approved", () => {
+    const brief = generateMeetingBrief(demoData);
+
+    expect(() =>
+      generateFollowUpDraft(brief, {
+        "critical-illness-gap": "rejected",
+        "education-planning": "rejected",
+        "family-protection-review": "rejected",
+      }),
+    ).toThrow("At least one talking point must be approved before generating a follow-up draft.");
+  });
+
   it("marks compliance as review required until final agent approval", () => {
     const brief = generateMeetingBrief(demoData);
     const draft = generateFollowUpDraft(brief, {

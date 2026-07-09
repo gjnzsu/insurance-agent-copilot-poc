@@ -116,13 +116,13 @@ describe("Agent Copilot workflow", () => {
     expect(
       within(followupBody).queryByText(/We can also revisit education planning/i),
     ).not.toBeInTheDocument();
-    const controlPanel = screen.getByRole("complementary", {
-      name: /Control panel/i,
+    const readyButtons = screen.getAllByRole("button", {
+      name: /Mark Ready for Agent Send/i,
     });
-    const panel = within(controlPanel);
-    expect(
-      screen.getAllByRole("button", { name: /Mark Ready for Agent Send/i }),
-    ).toHaveLength(1);
+    expect(readyButtons).toHaveLength(1);
+    await user.click(readyButtons[0]);
+    expect(readyButtons[0]).toBeDisabled();
+    expect(readyButtons[0]).toHaveTextContent("Ready for agent send");
     expect(screen.queryByRole("button", { name: /^Send$/i })).not.toBeInTheDocument();
   });
 

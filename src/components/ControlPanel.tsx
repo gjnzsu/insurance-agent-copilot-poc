@@ -108,8 +108,15 @@ export function ControlPanel({
       </div>
 
       {draft ? (
-        <button className="primary-action" onClick={onMarkReady} type="button">
-          Mark Ready for Agent Send
+        <button
+          className="primary-action"
+          disabled={draft.status === "ready_for_agent_send"}
+          onClick={onMarkReady}
+          type="button"
+        >
+          {draft.status === "ready_for_agent_send"
+            ? "Ready for agent send"
+            : "Mark Ready for Agent Send"}
         </button>
       ) : null}
     </aside>

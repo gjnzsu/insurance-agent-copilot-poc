@@ -98,6 +98,12 @@ export function generateFollowUpDraft(
     (point) => decisions[point.id] === "approved",
   );
 
+  if (approvedPoints.length === 0) {
+    throw new Error(
+      "At least one talking point must be approved before generating a follow-up draft.",
+    );
+  }
+
   const approvedBody = approvedPoints.map((point) => `- ${point.clientLanguage}`).join("\n");
 
   const body = [
