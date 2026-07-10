@@ -31,8 +31,8 @@ export function ApprovalCard({
     <article className={`approval-card ${compact ? "compact" : ""}`}>
       <div>
         <h3>{point.title}</h3>
-        {point.rationale ? <p>{point.rationale}</p> : null}
-        {point.clientLanguage && !isEditing ? (
+        {point.rationale && !compact ? <p>{point.rationale}</p> : null}
+        {point.clientLanguage && !isEditing && !compact ? (
           <p className="client-language">{point.clientLanguage}</p>
         ) : null}
         {point.clientLanguage && isEditing && onEdit ? (

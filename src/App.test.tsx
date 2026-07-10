@@ -18,7 +18,8 @@ describe("Agent Copilot workflow", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows human controls and evidence placeholders before brief generation", () => {
+  it("shows a compact human control hub before brief generation", async () => {
+    const user = userEvent.setup();
     render(<App />);
 
     const controlPanel = screen.getByRole("complementary", {
@@ -26,17 +27,27 @@ describe("Agent Copilot workflow", () => {
     });
     const panel = within(controlPanel);
 
+    expect(panel.getByRole("heading", { name: /Human Control Hub/i })).toBeInTheDocument();
     expect(panel.getByText(/Waiting for brief/i)).toBeInTheDocument();
-    expect(panel.getByRole("heading", { name: /Compliance/i })).toBeInTheDocument();
+    expect(panel.getByRole("tab", { name: /Approvals/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(panel.getByRole("tab", { name: /Compliance/i })).toBeInTheDocument();
+    expect(panel.getByRole("tab", { name: /Evidence/i })).toBeInTheDocument();
+
+    await user.click(panel.getByRole("tab", { name: /Compliance/i }));
     expect(
       panel.getByText(/Generate a brief to load compliance checks\./i),
     ).toBeInTheDocument();
 
-    expect(panel.getByRole("heading", { name: /Evidence/i })).toBeInTheDocument();
+    await user.click(panel.getByRole("tab", { name: /Evidence/i }));
     expect(panel.getByText(/Policy record\(s\)/i)).toBeInTheDocument();
     expect(panel.getByText(/Product knowledge snippet\(s\)/i)).toBeInTheDocument();
     expect(panel.getByText(/Compliance guideline\(s\)/i)).toBeInTheDocument();
-    expect(panel.getByText(/CRM interaction history/i)).toBeInTheDocument();
+    expect(panel.getByText(/\+1 more available in source drill-down/i)).toBeInTheDocument();
+
+    await user.click(panel.getByRole("tab", { name: /Approvals/i }));
 
     expect(
       panel.getByRole("button", { name: /Approve Critical illness protection gap/i }),
@@ -86,6 +97,47 @@ describe("Agent Copilot workflow", () => {
     expect(
       panel.getByRole("button", { name: /Reject Family protection review/i }),
     ).toBeInTheDocument();
+  });
+
+  it("keeps evidence and compliance details short behind tabs", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: /Generate Meeting Brief/i }));
+
+    const controlPanel = screen.getByRole("complementary", {
+      name: /Control panel/i,
+    });
+    const panel = within(controlPanel);
+
+    expect(panel.getByText(/3 pending/i)).toBeInTheDocument();
+    expect(panel.getByText(/11 linked/i)).toBeInTheDocument();
+    expect(panel.getByRole("tab", { name: /Approvals/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(
+      panel.getByText(/Changing approvals or client language clears the current draft\./i),
+    ).toBeInTheDocument();
+
+    await user.click(panel.getByRole("tab", { name: /Evidence/i }));
+
+    expect(panel.getByText(/Showing 3 of 11 linked sources/i)).toBeInTheDocument();
+    expect(panel.getByText(/Sunny Tan CRM profile and interaction notes/i)).toBeInTheDocument();
+    expect(panel.getByText(/Life policy record/i)).toBeInTheDocument();
+    expect(panel.getByText(/Medical policy record/i)).toBeInTheDocument();
+    expect(panel.queryByText(/Critical Illness policy record/i)).not.toBeInTheDocument();
+    expect(panel.getByText(/\+8 more available in source drill-down/i)).toBeInTheDocument();
+
+    await user.click(panel.getByRole("tab", { name: /Compliance/i }));
+
+    expect(panel.getByText(/Showing 3 of 5 guardrails/i)).toBeInTheDocument();
+    expect(panel.getByText(/No guaranteed outcome claims detected\./i)).toBeInTheDocument();
+    expect(
+      panel.getByText(/Suitability confirmation required before recommendation\./i),
+    ).toBeInTheDocument();
+    expect(panel.queryByText(/Compliance source linked to generated content\./i)).not.toBeInTheDocument();
+    expect(panel.getByText(/\+2 more guardrails/i)).toBeInTheDocument();
   });
 
   it("requires approval and excludes rejected talking points from follow-up", async () => {
@@ -151,6 +203,30 @@ describe("Agent Copilot workflow", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("keeps the Step 2 final action visible before meeting brief details", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: /Generate Meeting Brief/i }));
+
+    const workspace = screen.getByRole("region", {
+      name: /Agent approval workspace/i,
+    });
+    const workspaceText = workspace.textContent ?? "";
+    const actionIndex = workspaceText.indexOf("Generate Follow-up Draft");
+    const detailsIndex = workspaceText.indexOf("Meeting brief details");
+
+    expect(
+      within(workspace).getByRole("heading", { name: /Decision checkpoint/i }),
+    ).toBeInTheDocument();
+    expect(actionIndex).toBeGreaterThanOrEqual(0);
+    expect(detailsIndex).toBeGreaterThanOrEqual(0);
+    expect(actionIndex).toBeLessThan(detailsIndex);
+    expect(
+      within(workspace).getByText(/Approve at least one talking point to generate follow-up\./i),
+    ).toBeInTheDocument();
+  });
+
   it("invalidates the current draft when a talking point decision changes after draft generation", async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -186,9 +262,9 @@ describe("Agent Copilot workflow", () => {
 
     await user.click(screen.getByRole("button", { name: /Generate Meeting Brief/i }));
 
-    expect(screen.getByRole("heading", { name: /Meeting brief/i })).toBeInTheDocument();
+    expect(screen.getByText(/Meeting brief details/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Coverage gaps/i })).toBeInTheDocument();
-    expect(screen.getByText(/No visible critical illness rider\./i)).toBeInTheDocument();
+    expect(screen.getAllByText(/No visible critical illness rider\./i).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: /Next-best action/i })).toBeInTheDocument();
     expect(
       screen.getByText(/Run a needs-analysis conversation focused on family protection/i),
@@ -207,15 +283,13 @@ describe("Agent Copilot workflow", () => {
       name: /Control panel/i,
     });
     const panel = within(controlPanel);
-    const evidenceSection = panel.getByRole("heading", { name: /Evidence/i }).nextElementSibling;
+    await user.click(panel.getByRole("tab", { name: /Evidence/i }));
 
-    if (!(evidenceSection instanceof HTMLElement)) {
-      throw new Error("Evidence list was not rendered.");
-    }
-
-    expect(within(evidenceSection).getByText(/^Suitability confirmation/i)).toBeInTheDocument();
-    expect(within(evidenceSection).getByText(/^No guaranteed outcome claims/i)).toBeInTheDocument();
-    expect(within(evidenceSection).getByText(/^Underwriting caveat$/i)).toBeInTheDocument();
+    expect(panel.getByText(/Showing 3 of 11 linked sources/i)).toBeInTheDocument();
+    expect(panel.getByText(/Sunny Tan CRM profile and interaction notes/i)).toBeInTheDocument();
+    expect(panel.getByText(/Life policy record/i)).toBeInTheDocument();
+    expect(panel.getByText(/Medical policy record/i)).toBeInTheDocument();
+    expect(panel.getByText(/\+8 more available in source drill-down/i)).toBeInTheDocument();
   });
 
   it("uses edited approved talking point language in the follow-up draft", async () => {
