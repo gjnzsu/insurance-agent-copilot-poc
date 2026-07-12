@@ -1,5 +1,7 @@
 # Insurance Agent Copilot PoC: Product Evolution Roadmap
 
+Last refreshed: 2026-07-12
+
 ## 1. Purpose
 
 This document compares the current first-version codebase with the agreed PoC product scope and defines the evolution from an interaction demo to a trustworthy PoC, agent validation pilot, governed enterprise pilot, and reusable insurance AI platform.
@@ -45,6 +47,11 @@ The roadmap is driven by progressive risk reduction rather than feature volume:
 | Source references | Talking Points link to `sourceIds` | Provides a foundation for evidence evolution |
 | Compliance panel | Shows static guardrails and status | Establishes governance visibility |
 | Workflow tests | Covers approval, rejection, editing, and navigation | Provides a regression-test foundation |
+| First evidence-backed focus | Critical Illness is separated into Observation, Potential Issue, Confirmation Question, Evidence, and Limitation | Starts the Trustworthy Brief PoC with one inspectable vertical slice |
+| Epistemic labels | The Critical Illness focus distinguishes Fact, Inference, and Confirmation | Helps agents see what is known, derived, or unresolved |
+| Lightweight evidence | The Critical Illness observation shows a source ID, type, supporting excerpt, and last-updated date | Enables claim-level verification for the first slice |
+| PoC transparency | Displays `Synthetic demo data` and `Meeting preparation support only` | Reduces the risk of overstating product or model maturity |
+| Experienced-agent validation kit | Includes a moderated session guide, scorecard, directional pass rule, and result template | Makes early trust validation executable with one to three mature agents |
 
 ### 3.2 Simulated or Partial
 
@@ -52,8 +59,8 @@ The roadmap is driven by progressive risk reduction rather than feature volume:
 |---|---|---|
 | AI generation | Uses deterministic TypeScript fixtures, not a model call | Does not validate model quality, latency, or failure modes |
 | Client context | Includes Snapshot and Policy Summary | Missing a distinct Recent Context section, data states, and limitations |
-| Potential issues | Uses fixed Talking Points and `coverageGaps` | Does not clearly distinguish Fact, Inference, and Confirmation Question |
-| Evidence | Shows source titles and types | Missing claim-level excerpts, last-updated dates, and limitations |
+| Potential issues | Critical Illness uses the new structure; the other Talking Points and `coverageGaps` remain fixed | Extend Fact, Inference, Confirmation Question, and Limitation semantics beyond the first slice |
+| Evidence | Critical Illness has claim-level evidence; other content still shows source titles and types | Extend excerpts, recency, and limitation handling consistently across the brief |
 | Editing | Allows client-language editing | Missing `Save & Approve` semantics and original-versus-edited version records |
 | Approval state | Supports only `pending / approved / rejected` | Missing Approved with edits, rejection reasons, and review metadata |
 | Compliance | Uses static flags | Does not implement testable G0–G6 gate boundaries |
@@ -69,9 +76,8 @@ The roadmap is driven by progressive risk reduction rather than feature volume:
 | Missing data | Fixed happy path | Keep missing data missing and expose limitations |
 | Conflicting data | Not implemented | Preserve conflicting sources and create confirmation items |
 | Zero suggestions | Not implemented | Allow abstention when evidence is insufficient |
-| Data contract | Types lack lineage metadata | Add minimum record, claim, and decision contracts |
+| Data contract | The first focus has lightweight claim and lineage metadata | Generalise minimum record, claim, and decision contracts only after agent validation |
 | Evaluation | Functional tests only | Add a Golden Dataset and three-layer evaluation |
-| Synthetic label | The UI does not disclose it | Display `Synthetic demo data` clearly |
 
 ## 4. Scope Alignment Decisions
 
@@ -136,6 +142,8 @@ Use synthetic data to demonstrate the complete story of Meeting Brief generation
 
 ### Next 1: Trustworthy Brief PoC
 
+**Status: In progress.** The first evidence-backed Critical Illness vertical slice was delivered on 2026-07-12. Completion of this slice does not mean the phase exit criteria have been met.
+
 **Outcome**
 
 Refocus the current demo into a trustworthy Meeting Brief PoC that tests whether an agent can inspect evidence, resolve every AI suggestion, and create a final brief aligned with approval decisions.
@@ -151,6 +159,7 @@ Refocus the current demo into a trustworthy Meeting Brief PoC that tests whether
    - Observation, Potential Issue, Confirmation Question, Evidence, and Limitation.
    - Fact, Inference, and Confirmation labels.
    - Zero suggestions when evidence is insufficient.
+   - **Progress:** The first two items are implemented for the Critical Illness focus only. Zero-suggestion behaviour and consistent coverage across other focuses remain open.
 
 3. **Explicit Human Decision Model**
    - Approve.
@@ -168,6 +177,24 @@ Refocus the current demo into a trustworthy Meeting Brief PoC that tests whether
    - Display `Synthetic demo data`.
    - State the Meeting Preparation Support boundary.
    - Do not claim completion of FNA, suitability assessment, or product recommendation.
+   - **Progress:** Implemented for the first evidence-backed Critical Illness slice; broader placement and agent comprehension still require validation.
+
+**Delivered Slice: Evidence-backed Critical Illness Focus**
+
+- Separates a policy-record observation from a system inference and client confirmation question.
+- Provides claim-level evidence with an excerpt and last-updated date.
+- States that visible records do not establish need, affordability, eligibility, underwriting outcome, or suitability.
+- Preserves Approve, Edit, and Reject controls.
+- Includes a 20–25 minute mature-agent validation guide and scorecard.
+
+**Remaining Before the Next 1 Gate**
+
+- Validate the first slice with one to three mature agents and record verification time, evidence use, decisions, reasons, issue detection, and confidence.
+- Apply the validated structure consistently to the remaining meeting-focus content.
+- Implement Approved with edits, structured rejection reasons, and complete-review semantics.
+- Allow reject-all while retaining a factual brief.
+- Create the versioned Final Meeting Brief with approver and approval time.
+- Add missing, conflicting, unavailable-source, and zero-suggestion states.
 
 **Dependencies**
 
@@ -363,10 +390,20 @@ Each phase retains only the metrics relevant to its primary risk.
 
 ## 10. Recommended Next Decision
 
-The only recommended focus for the next phase is **Trustworthy Brief PoC**.
+Continue **Trustworthy Brief PoC**, but validate the completed Critical Illness slice before expanding the pattern across the full brief.
+
+The immediate decision gate is a directional review with one to three mature insurance agents. The review should test whether they can:
+
+- distinguish Fact from Inference without facilitator explanation;
+- trace the observation to supporting evidence;
+- judge whether the Confirmation Question belongs in the meeting;
+- Approve, Edit, or Reject with a substantive reason; and
+- identify unsupported, misleading, or missing information.
+
+If the structure improves verification and does not read as a product recommendation or suitability conclusion, extend the pattern to the remaining meeting focuses. If agents find the structure slow, misleading, or incomplete, revise the information model before adding breadth.
 
 Do not move immediately into real CRM integration, automated Follow-up, product recommendation, or platform construction. First demonstrate:
 
 > The Agent Copilot can use inspectable synthetic evidence to create an accurate, rejectable, editable final Meeting Brief that remains aligned with explicit human approval.
 
-Only after passing this gate do model evaluation, real-agent validation, and enterprise-governance investment have a sound foundation.
+Only after the complete Trustworthy Brief gate is passed should the roadmap advance to repeatable model evaluation, broader agent validation, and enterprise-governance investment.
