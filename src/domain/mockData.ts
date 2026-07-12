@@ -26,6 +26,8 @@ export const demoData: DemoData = {
       type: "Critical Illness",
       summary: "No critical illness rider currently visible.",
       coverageLevel: "missing",
+      sourceExcerpt: "No critical illness rider currently visible.",
+      lastUpdated: "2026-06-30",
     },
     {
       id: "POL-EDU-004",

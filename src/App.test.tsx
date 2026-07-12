@@ -9,6 +9,35 @@ afterEach(() => {
 });
 
 describe("Agent Copilot workflow", () => {
+  it("shows an evidence-backed critical illness focus with safe boundaries", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: /Generate Meeting Brief/i }));
+    const workspace = within(
+      screen.getByRole("region", { name: /Agent approval workspace/i }),
+    );
+
+    expect(workspace.getByText("Synthetic demo data")).toBeInTheDocument();
+    expect(workspace.getByText("Meeting preparation support only")).toBeInTheDocument();
+    expect(workspace.getByRole("heading", { name: "Observation" })).toBeInTheDocument();
+    expect(workspace.getByText("Fact")).toBeInTheDocument();
+    expect(workspace.getByRole("heading", { name: "Potential Issue" })).toBeInTheDocument();
+    expect(workspace.getByText("Inference")).toBeInTheDocument();
+    expect(
+      workspace.getByRole("heading", { name: "Confirmation Question" }),
+    ).toBeInTheDocument();
+    expect(workspace.getByText("Confirmation")).toBeInTheDocument();
+    await user.click(workspace.getByText("Evidence"));
+    expect(workspace.getByText("POL-CI-003")).toBeInTheDocument();
+    expect(workspace.getByText(/Last updated: 2026-06-30/i)).toBeInTheDocument();
+    expect(workspace.getByRole("heading", { name: "Limitation" })).toBeInTheDocument();
+    expect(workspace.getByText(/do not establish need, affordability/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Reject Critical illness protection gap/i }),
+    ).toBeEnabled();
+  });
+
   it("starts directly in Sunny Tan's review case", () => {
     render(<App />);
 

@@ -15,6 +15,8 @@ export interface PolicyRecord {
   type: string;
   summary: string;
   coverageLevel: "basic" | "moderate" | "missing";
+  sourceExcerpt?: string;
+  lastUpdated?: string;
 }
 
 export interface KnowledgeSnippet {
@@ -44,6 +46,27 @@ export interface TalkingPoint {
   clientLanguage: string;
   decision: TalkingPointDecision;
   sourceIds: string[];
+  meetingFocus?: EvidenceBackedMeetingFocus;
+}
+
+export interface LabeledClaim {
+  label: "fact" | "inference" | "confirmation";
+  text: string;
+}
+
+export interface LightweightEvidence {
+  sourceId: string;
+  sourceType: SourceReference["kind"];
+  excerpt: string;
+  lastUpdated: string;
+}
+
+export interface EvidenceBackedMeetingFocus {
+  observation: LabeledClaim;
+  potentialIssue: LabeledClaim;
+  confirmationQuestion: LabeledClaim;
+  evidence: LightweightEvidence[];
+  limitation: string;
 }
 
 export interface MeetingBrief {

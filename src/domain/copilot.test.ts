@@ -7,6 +7,40 @@ import {
 } from "./copilot";
 
 describe("copilot domain logic", () => {
+  it("structures the critical illness focus as evidence-backed meeting preparation", () => {
+    const brief = generateMeetingBrief(demoData);
+    const focus = brief.talkingPoints.find(
+      (point) => point.id === "critical-illness-gap",
+    );
+
+    expect(focus?.meetingFocus).toEqual({
+      observation: {
+        label: "fact",
+        text: "No critical illness rider is visible in the current synthetic policy record.",
+      },
+      potentialIssue: {
+        label: "inference",
+        text: expect.stringContaining("income disruption"),
+      },
+      confirmationQuestion: {
+        label: "confirmation",
+        text: expect.stringContaining("income support"),
+      },
+      evidence: [
+        {
+          sourceId: "POL-CI-003",
+          sourceType: "policy",
+          excerpt: "No critical illness rider currently visible.",
+          lastUpdated: "2026-06-30",
+        },
+      ],
+      limitation: expect.stringMatching(
+        /do not establish need, affordability, eligibility, underwriting outcome, or suitability/i,
+      ),
+    });
+    expect(focus?.meetingFocus?.potentialIssue.text).not.toMatch(/recommend/i);
+  });
+
   it("generates a meeting brief for Sunny Tan with cited sources", () => {
     const brief = generateMeetingBrief(demoData);
     const sourceById = new Map(brief.sources.map((source) => [source.id, source]));

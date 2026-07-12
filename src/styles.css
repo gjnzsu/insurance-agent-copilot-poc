@@ -323,6 +323,87 @@ li {
   padding: 10px;
 }
 
+.meeting-focus {
+  border-top: 1px solid #e2e8f0;
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  padding-top: 12px;
+}
+
+.scope-notice {
+  align-items: center;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  color: #9a3412;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.scope-notice span {
+  font-size: 0.86rem;
+}
+
+.claim-block,
+.limitation-block,
+.focus-evidence {
+  background: #f8fafc;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.claim-heading {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.claim-heading h4,
+.limitation-block h4,
+.claim-block p,
+.limitation-block p,
+.evidence-item p:last-child {
+  margin: 0;
+}
+
+.claim-label {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.claim-label.fact { background: #dbeafe; color: #1d4ed8; }
+.claim-label.inference { background: #fef3c7; color: #92400e; }
+.claim-label.confirmation { background: #ede9fe; color: #6d28d9; }
+
+.focus-evidence summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.evidence-item {
+  margin-top: 10px;
+}
+
+.evidence-item blockquote {
+  border-left: 3px solid #3b82f6;
+  margin: 8px 0;
+  padding-left: 10px;
+}
+
+.limitation-block {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
 .approval-actions {
   align-content: start;
   display: grid;

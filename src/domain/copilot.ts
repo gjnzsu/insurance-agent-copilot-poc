@@ -17,6 +17,10 @@ function source(
 }
 
 export function generateMeetingBrief(data: DemoData): MeetingBrief {
+  const criticalIllnessRecord = data.policies.find(
+    (policy) => policy.id === "POL-CI-003",
+  );
+
   const productSources = data.knowledge
     .filter((item) => item.kind === "product")
     .map((item) => source(item.id, item.title, "product"));
@@ -34,6 +38,32 @@ export function generateMeetingBrief(data: DemoData): MeetingBrief {
         "We can review whether critical illness protection would help protect your household if treatment affects your income.",
       decision: "pending",
       sourceIds: ["POL-CI-003", "KNOW-CI", "COMP-SUITABILITY"],
+      meetingFocus: {
+        observation: {
+          label: "fact",
+          text: "No critical illness rider is visible in the current synthetic policy record.",
+        },
+        potentialIssue: {
+          label: "inference",
+          text: "A possible income disruption after a serious illness may be a relevant meeting-preparation topic for this young family.",
+        },
+        confirmationQuestion: {
+          label: "confirmation",
+          text: "How long would your household need income support if a serious illness affected work?",
+        },
+        evidence: [
+          {
+            sourceId: criticalIllnessRecord?.id ?? "POL-CI-003",
+            sourceType: "policy",
+            excerpt:
+              criticalIllnessRecord?.sourceExcerpt ??
+              "No critical illness rider currently visible.",
+            lastUpdated: criticalIllnessRecord?.lastUpdated ?? "Unavailable",
+          },
+        ],
+        limitation:
+          "Visible synthetic records do not establish need, affordability, eligibility, underwriting outcome, or suitability. Confirm the client's circumstances before taking this topic further.",
+      },
     },
     {
       id: "education-planning",
